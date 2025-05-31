@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>来电祝福</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      background: url("祝福背景.jpg") no-repeat center center;
+      background-size: cover;
+      position: relative;
+    }
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      border: 4px solid white;
+      margin: 20px auto 10px;
+      background: url("刘明洋微信头像.jpg") no-repeat center center;
+      background-size: cover;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+    .name {
+      text-align: center;
+      color: white;
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .calling {
+      text-align: center;
+      color: white;
+      font-size: 18px;
+      margin-bottom: 40px;
+    }
+    .answer-button {
+      width: 80px;
+      height: 80px;
+      background-color: green;
+      border-radius: 50%;
+      position: absolute;
+      left: 50%;
+      bottom: 80px;
+      transform: translateX(-50%);
+      box-shadow: 0 0 0 rgba(0, 255, 0, 0.7);
+      animation: pulse 1.5s infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .answer-button::after {
+      content: "接听";
+      color: white;
+      font-weight: bold;
+    }
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0.7);
+      }
+      70% {
+        box-shadow: 0 0 0 20px rgba(0, 255, 0, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(0, 255, 0, 0);
+      }
+    }
+    #musicToggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: rgba(0,0,0,0.5);
+      color: white;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 14px;
+      z-index: 9999;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="avatar"></div>
+  <div class="name">刘明洋</div>
+  <div class="calling">正在呼叫...</div>
+  <div class="answer-button" onclick="alert('通话界面暂未实现')"></div>
+  <div id="musicToggle">关闭音乐</div>
+
+  <audio id="bgm" loop>
+    <source src="阎维文 - 强军战歌_cut.wav" type="audio/wav">
+    您的浏览器不支持 audio 元素。
+  </audio>
+
+  <script>
+    const bgm = document.getElementById("bgm");
+    const musicToggle = document.getElementById("musicToggle");
+    let isMusicPlaying = false;
+
+    function updateMusicButton() {
+      musicToggle.textContent = isMusicPlaying ? "关闭音乐" : "开启音乐";
+    }
+
+    musicToggle.addEventListener("click", () => {
+      if (isMusicPlaying) {
+        bgm.pause();
+        isMusicPlaying = false;
+      } else {
+        bgm.play().catch(() => {});
+        isMusicPlaying = true;
+      }
+      updateMusicButton();
+    });
+
+    // 自动播放音乐（兼容微信）
+    document.addEventListener("DOMContentLoaded", () => {
+      bgm.play().then(() => {
+        isMusicPlaying = true;
+        updateMusicButton();
+      }).catch(() => {
+        document.body.addEventListener("click", () => {
+          bgm.play().then(() => {
+            isMusicPlaying = true;
+            updateMusicButton();
+          });
+        }, { once: true });
+      });
+    });
+
+    // 微信特殊自动播放处理
+    document.addEventListener("WeixinJSBridgeReady", () => {
+      bgm.play();
+      isMusicPlaying = true;
+      updateMusicButton();
+    }, false);
+  </script>
+
+</body>
+</html>
